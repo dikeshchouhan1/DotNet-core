@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using ecommerce.Data;
+using ecommerce.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ecommerce.Controllers
 {
@@ -8,36 +9,40 @@ namespace ecommerce.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        // GET: api/<RoleController>
+        private readonly EcommerceDataContext _context;
+
+        public RoleController(EcommerceDataContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+
+        public IActionResult GetRoles()
         {
-            return new string[] { "value1", "value2" };
+            var roles = _context.Roles.ToList();
+            return Ok(roles);
         }
 
-        // GET api/<RoleController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
-        // POST api/<RoleController>
         [HttpPost]
-        public void Post([FromBody] string value)
+
+        public IActionResult Create([FromBody] Role role)
         {
+            if (role == null)
+            {
+                return BadRequest("Role is null.");
+            }
+
+            Role roleToUpdate = new Role
+            {
+                RoleName = role.RoleName,
+               
+            };
+             _context.Roles.Add(roleToUpdate);
+            _context.SaveChanges();
+            return Ok("yes");
         }
 
-        // PUT api/<RoleController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<RoleController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
